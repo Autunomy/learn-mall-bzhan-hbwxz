@@ -1,6 +1,9 @@
 package com.hty.feign;
 
-import org.springframework.stereotype.Component;
+import org.springframework.cloud.openfeign.FeignClient;
+import org.springframework.web.bind.annotation.RequestMapping;
+
+import java.util.Map;
 
 /**
  * @author hty
@@ -10,11 +13,9 @@ import org.springframework.stereotype.Component;
  * @other 更多请看www.autunomy.top
  */
 
-@Component
-public class Oauth2FeignClient {
+@FeignClient("oauth2-service")
+public interface Oauth2FeignClient {
 
-    public boolean checkToken(String token){
-        return true;
-    }
-
+    @RequestMapping("/oauth/check_token")
+    public Map<String, Object> checkToken(String token);
 }
