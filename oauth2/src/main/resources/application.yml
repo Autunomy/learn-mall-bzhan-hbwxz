@@ -1,0 +1,20 @@
+server:
+  port: 8500
+spring:
+  application:
+    name: oauth2-service
+  main:
+    allow-bean-definition-overriding: true
+
+  cloud:
+    nacos:
+      discovery:
+        server-addr: 192.168.150.1:8849,192.168.150.1:8850,192.168.150.1:8851
+      config:
+        server-addr: 192.168.150.1:8849,192.168.150.1:8850,192.168.150.1:8851
+        file-extension: yaml
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://localhost:3306/oauth?serverTimezone=UTC&useSSL=false
+    username: root
+    password: 123456

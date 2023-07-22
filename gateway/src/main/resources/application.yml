@@ -1,0 +1,39 @@
+server:
+  port: 9090
+spring:
+  application:
+    name: gateway-service
+  main:
+    allow-bean-definition-overriding: true
+
+  cloud:
+    nacos:
+      discovery:
+        server-addr: 192.168.150.1:8849,192.168.150.1:8850,192.168.150.1:8851
+      config:
+        server-addr: 192.168.150.1:8849,192.168.150.1:8850,192.168.150.1:8851
+        file-extension: yaml
+
+    gateway:
+      discovery:
+        locator:
+          enabled: true
+      routes:
+        - id: oauth2-service-routes
+          uri: lb://oauth2-service
+          predicates:
+            - Path=/**
+          filters:
+            - StripPrefix=1
+        - id: user-service-routes
+          uri: lb://user-service
+          predicates:
+            - Path=/**
+          filters:
+            - StripPrefix=1
+  # 第一种oauth2继承方式
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://localhost:3306/oauth?serverTimezone=UTC&useSSL=false
+    username: root
+    password: 123456
