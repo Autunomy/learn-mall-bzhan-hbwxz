@@ -13,3 +13,13 @@ spring:
       config:
         server-addr: 192.168.150.1:8849,192.168.150.1:8850,192.168.150.1:8851
         file-extension: yaml
+  redis:
+    host: localhost
+    port: 6319
+    timeout: 10s
+    lettuce:
+      pool:
+        max-active: 50
+        max-idle: 50
+        max-wait: -1ms
+        min-idle: 0
