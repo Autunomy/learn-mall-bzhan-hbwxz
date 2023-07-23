@@ -1,6 +1,7 @@
 package com.hty.filter;
 
 import com.hty.feign.Oauth2FeignClient;
+import lombok.SneakyThrows;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cloud.gateway.filter.GatewayFilterChain;
 import org.springframework.cloud.gateway.filter.GlobalFilter;
@@ -15,6 +16,7 @@ import reactor.core.publisher.Mono;
 
 import java.util.Map;
 import java.util.UUID;
+import java.util.concurrent.CompletableFuture;
 
 /**
  * @author hty
@@ -29,9 +31,10 @@ public class Oauth2Filter implements GlobalFilter, Ordered {
 
     //调用check token 接口
     @Autowired
-    @Lazy //滞后加载 防止死锁
+    @Lazy //滞后加载 防止死锁 openfeign是rest形式访问 是同步访问，但是gateway是基于netty的响应式编程
     private Oauth2FeignClient oauth2FeignClient;
 
+    @SneakyThrows
     @Override
     public Mono<Void> filter(ServerWebExchange exchange, GatewayFilterChain chain) {
         ServerHttpRequest request = exchange.getRequest();
@@ -45,7 +48,14 @@ public class Oauth2Filter implements GlobalFilter, Ordered {
         }
         //校验token  不要bearer前缀
         String token = request.getHeaders().getFirst("Authorization");
-        Map<String, Object> tokenResult = oauth2FeignClient.checkToken(token);
+//        Map<String, Object> tokenResult = oauth2FeignClient.checkToken(token);
+        //使用异步调用 防止报错
+        CompletableFuture<Map> future = CompletableFuture.supplyAsync(() -> {
+            return oauth2FeignClient.checkToken(token);
+        });
+        Map<String, Object> tokenResult = future.get();
+
+
         if (!Boolean.valueOf(String.valueOf(tokenResult.get("active")))) {
             response.setStatusCode(HttpStatus.UNAUTHORIZED);//设置http状态码为 未认证
             return response.setComplete();//请求结束

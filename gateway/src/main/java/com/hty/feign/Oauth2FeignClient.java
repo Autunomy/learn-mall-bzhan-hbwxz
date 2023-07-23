@@ -2,6 +2,7 @@ package com.hty.feign;
 
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 
 import java.util.Map;
 
@@ -17,5 +18,5 @@ import java.util.Map;
 public interface Oauth2FeignClient {
 
     @RequestMapping("/oauth/check_token")
-    public Map<String, Object> checkToken(String token);
+    public Map<String, Object> checkToken(@RequestParam String token);
 }
